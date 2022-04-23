@@ -1,0 +1,385 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<iostream>
+#include <windows.h>
+using namespace std;
+#define LEN sizeof(struct stu)
+
+void creat();
+void add();
+void insert();
+void del();
+void search();
+void show();
+
+void RED() {//背景为红
+	HANDLE kai_1 = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(kai_1, FOREGROUND_INTENSITY | FOREGROUND_RED); 
+}
+
+void GREEN() {//背景为绿
+	HANDLE kai_2 = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(kai_2, FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+}
+struct stu
+{
+	char name[20];
+	char pho[20];
+	char qq[20];
+	char em[20];
+	struct stu *last;
+	struct stu *next;
+};
+struct stu *Creat()
+{
+	struct stu *head,*p1,*p2;
+	head=p2=(struct stu*)malloc(LEN);
+	head->last=NULL;
+	head->next=p2;
+	p2->last=head;
+	p2->next=NULL;
+	p1=head;
+	int r;
+	for(;;)
+	{
+		r=scanf("%s",p1->name);
+		if(r==EOF)
+		{
+			break;
+		}
+		scanf("%s %s %s %s",p1->name,p1->pho,p1->qq,p1->em);
+		p1->next=p2;
+		p2->last=p1;
+		p1=p2;
+		p2=(struct stu*)malloc(LEN);
+		p2->next=NULL;
+	}
+	p1->next=head;
+	head->last=p1;
+	return(head);
+}
+struct stu *read()
+{
+	FILE *fp;
+	char name[20],s;
+	struct stu *head,*p1,*p2;
+	p1=p2=(struct stu*)malloc(LEN);
+	head=p1;
+	p2->next=p1;
+	p1->last=p2;
+	int r;
+	GREEN();
+	printf("********************************>>>>>>当前模式为学生信息录入状态<<<<<<*********************************\n\n");
+	RED();
+	if((fp=fopen("D:\\编程\\程序\\课设\\通讯录.txt","r"))==NULL)
+	{
+		printf("打开档案错误！请按任意键返回。");
+		getchar();
+		exit(0);
+	}
+	for(int i=0;i<4;i++)
+	{
+		fscanf(fp,"%s",name);
+	}
+	while(1)
+	{
+		fscanf(fp,"%s",p1->name);
+		fscanf(fp,"%s",&p1->pho);
+		fscanf(fp,"%s",&p1->qq);
+		r=fscanf(fp,"%s",&p1->em);
+		fscanf(fp,"%c",&s);
+		if(r==EOF)
+		{
+			break;
+		}
+		p2=p1;
+		p1=(struct stu*)malloc(LEN);
+		p2->next=p1;
+		p1->last=p2;
+	}
+	p2->next=NULL;
+	return(head);
+}
+
+int main()
+{
+	FILE *fp;
+	int mode;
+	GREEN();
+	printf("********************************************程序操作指令码*********************************************");
+	RED();
+	printf("\n                               新建学生档案:1            添加学生档案:2\n");
+	printf("\n                               插入学生档案:3            删除学生档案:4\n");
+	printf("\n                               查询学生档案:5            输出所有档案:6\n");
+	GREEN();
+	printf("*******************************************************************************************************\n");
+	RED();
+	printf("输入指令:");
+	scanf("%d",&mode);
+	switch(mode)
+	{
+	case 1:creat();break;
+	case 2:add();break;
+	case 3:insert();break;
+	case 4:del();break;
+	case 5:search();break;
+	case 6:show();break;
+	}
+	system("pause");
+	return 0;
+}
+void creat()
+{
+	FILE *fp;
+	char sh[20],name[20],pho[20],qq[20],em[20],s,ch;
+	int r=0;
+	if((fp=fopen("D:\\编程\\程序\\课设\\通讯录.txt","w"))==NULL)
+	{
+		printf("新建档案错误！请按任意键返回。");
+		getchar();
+		exit(0);
+	}
+	RED();
+	printf("请依次输入以下信息:(输入完数据后请回车，Ctrl+Z，再回车）\n");
+	GREEN();
+	printf("*******************************>>>>>>当前模式为学生信息录入状态<<<<<<**********************************\n");
+	RED();
+	printf("姓名            电话                qq                  邮箱\n");
+	fprintf(fp,"姓名            电话                      qq                        邮箱\n");
+	while(1)
+	{
+		r=scanf("%s",name);
+		if(r==EOF)
+		{
+			break;
+		}
+		scanf("%s",pho);
+		scanf("%s",qq);
+		scanf("%s",em);
+		scanf("%c",&ch);
+		fprintf(fp,"%-16s%-20s%-20s%-20s\n",name,pho,qq,em);
+	}
+	fclose(fp);
+}
+void search()
+{
+	FILE *fp;
+	int r;
+	char sh[20],name[20],pho[20],qq[20],em[20],s;
+	GREEN();
+	printf("*******************************************************************************************************\n");
+	RED();
+	printf("请输入学生姓名：");
+	scanf("%s",sh);
+	GREEN();
+	printf("*******************************************************************************************************\n");
+	RED();
+	if((fp=fopen("D:\\编程\\程序\\课设\\通讯录.txt","r"))==NULL)
+	{
+		RED();
+		printf("打开档案错误！请按任意键返回。");
+		getchar();
+		exit(0);
+	}
+	fscanf(fp,"%s",name);
+	printf("%-15s",name);
+	for(int i=0;i<3;i++)
+	{
+		fscanf(fp,"%s",name);
+		printf("%-20s",name);
+	}
+	fscanf(fp,"%c",&s);
+	printf("%c",s);
+    while(1)
+	{
+		fscanf(fp,"%s",name);
+		fscanf(fp,"%s",pho);
+		fscanf(fp,"%s",qq);
+		fscanf(fp,"%s",em);
+		r=fscanf(fp,"%c",&s);
+		if(strcmp(name,sh)==0)
+		{
+		  printf("\n%-15s%-20s%-20s%-20s\n",name,pho,qq,em);
+		  GREEN();
+		  printf("*******************************************************************************************************\n");
+		  RED();
+		  break;
+		}
+		if(r==EOF)
+		{
+			RED();
+			printf("抱歉，查无此人！\n");
+			break;
+		}
+	}
+	fclose(fp);
+}
+
+void insert()
+{
+	FILE *fp;
+	struct stu *pt,*p1,*p2;
+	int r=0;
+	char name[20],pho[20],qq[20],em[20],sh[20];
+	pt=read();
+	p2=pt;
+	printf("请输入插入学生位置(在谁之后):\n");
+	scanf("%s",sh);
+	p1=(struct stu*)malloc(LEN);
+	if((fp=fopen("D:\\编程\\程序\\课设\\通讯录.txt","w"))==NULL)
+	{
+		RED();
+		printf("打开档案错误！请按任意键返回。");
+		getchar();
+		exit(0);
+	}
+	RED();
+	fprintf(fp,"姓名            电话                      qq                        邮箱\n");
+	while(1)
+	{
+		if(strcmp(pt->name,sh)==0)
+		{
+			p1->next=pt->next;
+			p1->last=pt;
+			pt->next=p1;
+			pt=p1->next;
+			pt->last=p1;
+			pt=p1->last;
+			r=1;
+			break;
+		}
+		pt=pt->next;
+		if(pt==NULL)
+		{
+			break;
+		}
+	}
+	if(r==1){
+		printf("姓名            电话                      qq                        邮箱\n");
+		scanf("%s",p1->name);
+		scanf("%s",p1->pho);
+		scanf("%s",p1->qq);
+		scanf("%s",p1->em);
+		pt=p2;
+		while(1)
+	{
+		fprintf(fp,"%-15s%-20s%-20s%-20s\n",pt->name,pt->pho,pt->qq,pt->em);
+		pt=pt->next;
+		if(pt==NULL)
+		{
+			break;
+		}
+	}
+	}
+	else
+		printf("抱歉，查无此人！\n");
+	GREEN();
+	printf("*******************************************************************************************************\n");
+	RED();
+	fclose(fp);
+}
+void del()
+{
+	FILE *fp;
+	int r=0;
+	struct stu *pt,*p1,*p2;
+	char name[20],pho[20],qq[20],em[20],sh[20];
+	pt=read();
+	printf("请输入删除学生:\n");
+	scanf("%s",sh);
+	if((fp=fopen("D:\\编程\\程序\\课设\\通讯录.txt","w"))==NULL)
+	{
+		RED();
+		printf("打开档案错误！请按任意键返回。");
+		getchar();
+		exit(0);
+	}
+	RED();
+	fprintf(fp,"姓名            电话                      qq                        邮箱\n");
+	while(1)
+	{
+		if(strcmp(pt->name,sh)==0)
+		{
+			p1=pt->next;
+			p2=pt->last;
+			p2->next=p1;
+			p1->last=p2;
+			pt=p1;
+			r=1;
+		}
+		fprintf(fp,"%-15s%-20s%-20s%-20s\n",pt->name,pt->pho,pt->qq,pt->em);
+		pt=pt->next;
+		if(pt==NULL)
+		{
+			break;
+		}
+	}
+	if(r==0)
+		printf("抱歉，查无此人！\n");
+	GREEN();
+	printf("*******************************************************************************************************\n");
+	RED();
+	fclose(fp);
+}
+void add()
+{
+	FILE *fp;
+	struct stu *pt;
+	char sh,name[20],pho[20],qq[20],em[20];
+	if((fp=fopen("D:\\编程\\程序\\课设\\通讯录.txt","a"))==NULL)
+	{
+		RED();
+		printf("打开档案错误！请按任意键返回。");
+		getchar();
+		exit(0);
+	}
+	GREEN();
+	printf("*******************************************************************************************************\n");
+	RED();
+	printf("请输入以下信息:\n");
+	printf("姓名          电话                      qq                        邮箱\n");
+	scanf("%s%s%s%s",&name,&pho,&qq,&em);
+	fprintf(fp,"%-15s%-20s%-20s%-20s",name,pho,qq,em);
+	fprintf(fp,"\n");
+    fclose(fp);
+}
+void show()
+{
+	FILE *fp;
+	int r;
+	char sh[20],name[20],pho[20],qq[20],em[20],s;
+	GREEN();
+	printf("*******************************************************************************************************\n");
+	if((fp=fopen("D:\\编程\\程序\\课设\\通讯录.txt","r"))==NULL)
+	{
+		RED();
+		printf("打开档案错误！请按任意键返回。");
+		getchar();
+		exit(0);
+	}
+	fscanf(fp,"%s",name);
+	printf("%-15s",name);
+	for(int i=0;i<3;i++)
+	{
+		fscanf(fp,"%s",name);
+		printf("%-20s",name);
+	}
+	printf("\n");
+	RED();
+	while(1)
+	{
+		r=fscanf(fp,"%s",name);
+		fscanf(fp,"%s",pho);
+		fscanf(fp,"%s",qq);
+		fscanf(fp,"%s",em);
+		if(r==EOF)
+		{
+			break;
+		}
+		printf("%-15s%-20s%-20s%-20s\n",name,pho,qq,em);
+	}
+	GREEN();
+	printf("*******************************************************************************************************\n");
+	RED();
+	fclose(fp);}
